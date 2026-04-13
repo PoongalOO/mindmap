@@ -1,0 +1,344 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:MindMapApp.ViewModels"
+        xmlns:views="using:MindMapApp.Views"
+        xmlns:conv="using:MindMapApp.Converters"
+        x:Class="MindMapApp.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding MindMap.Title, StringFormat='MindMap — {0}'}"
+        Icon="avares://MindMapApp/Assets/icon.png"
+        Width="1280" Height="800"
+        MinWidth="800" MinHeight="500"
+        Background="#0F172A"
+        WindowStartupLocation="CenterScreen">
+
+  <DockPanel>
+
+    <!-- ════════════════════════ TOOLBAR ════════════════════════ -->
+    <Border DockPanel.Dock="Top"
+            Classes="Toolbar">
+      <StackPanel Orientation="Horizontal" Spacing="6">
+
+        <!-- Logo application -->
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="4,0,8,0"
+                    VerticalAlignment="Center">
+          <Image Source="avares://MindMapApp/Assets/icon.png"
+                 Width="28" Height="28"
+                 VerticalAlignment="Center" />
+          <TextBlock Text="MindMap"
+                     FontSize="15"
+                     FontWeight="SemiBold"
+                     Foreground="#E2E8F0"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Separator Classes="ToolbarSeparator" />
+
+        <!-- Groupe Fichier -->
+        <Button Command="{Binding NewCommand}"
+                Classes="ToolbarButton"
+                ToolTip.Tip="Nouvelle carte">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM6 20V4h7v5h5v11z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Nouveau" />
+          </StackPanel>
+        </Button>
+
+        <Button Command="{Binding OpenCommand}"
+                Classes="ToolbarButton"
+                ToolTip.Tip="Ouvrir une carte">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M20 6H12l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Ouvrir" />
+          </StackPanel>
+        </Button>
+
+        <Button Command="{Binding SaveCommand}"
+                Classes="ToolbarButton"
+                ToolTip.Tip="Enregistrer la carte">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Enregistrer" />
+          </StackPanel>
+        </Button>
+
+        <!-- Séparateur -->
+        <Separator Classes="ToolbarSeparator" />
+
+        <!-- Groupe Nœuds -->
+        <Button Command="{Binding AddRootNodeCommand}"
+                Classes="ToolbarButton Primary"
+                ToolTip.Tip="Ajouter un nœud racine">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Nœud racine" />
+          </StackPanel>
+        </Button>
+
+        <Button Command="{Binding AddChildNodeCommand}"
+                Classes="ToolbarButton"
+                ToolTip.Tip="Ajouter un nœud enfant au nœud sélectionné">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Ajouter enfant" />
+          </StackPanel>
+        </Button>
+
+        <Button Command="{Binding DeleteNodeCommand}"
+                Classes="ToolbarButton Danger"
+                ToolTip.Tip="Supprimer le nœud sélectionné">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Supprimer" />
+          </StackPanel>
+        </Button>
+
+        <!-- Séparateur -->
+        <Separator Classes="ToolbarSeparator" />
+
+        <!-- Zoom reset -->
+        <Button Command="{Binding ResetViewCommand}"
+                Classes="ToolbarButton"
+                ToolTip.Tip="Réinitialiser le zoom et la vue">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Réinitialiser vue" />
+          </StackPanel>
+        </Button>
+
+        <!-- Réduire / Développer nœud sélectionné -->
+        <Button Command="{Binding ToggleCollapseCommand}"
+                Classes="ToolbarButton"
+                ToolTip.Tip="Réduire ou développer le nœud sélectionné">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M7 10l5 5 5-5z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Réduire/Développer" />
+          </StackPanel>
+        </Button>
+
+        <!-- Séparateur -->
+        <Separator Classes="ToolbarSeparator" />
+
+        <!-- Import -->
+        <Button Command="{Binding ImportCommand}"
+                Classes="ToolbarButton"
+                ToolTip.Tip="Importer depuis FreeMind, OPML, XMind, MindMeister, Markdown ou MindNode">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"
+                      Width="14" Height="14" />
+            <TextBlock Text="Importer" />
+          </StackPanel>
+        </Button>
+
+        <!-- Titre éditable -->
+        <Separator Classes="ToolbarSeparator" />
+        <TextBox Text="{Binding MindMap.Title}"
+                 Classes="TitleEdit"
+                 Width="220"
+                 ToolTip.Tip="Titre de la carte" />
+
+      </StackPanel>
+    </Border>
+
+    <!-- ════════════════════════ STATUS BAR ════════════════════════ -->
+    <Border DockPanel.Dock="Bottom"
+            Classes="StatusBar">
+      <Grid ColumnDefinitions="*,Auto,Auto" VerticalAlignment="Center">
+
+        <!-- Message d'état (gauche) -->
+        <TextBlock Grid.Column="0"
+                   Text="{Binding StatusMessage}"
+                   VerticalAlignment="Center" />
+
+        <!-- Site officiel (centre) -->
+        <Button Grid.Column="1"
+                Classes="StatusLink"
+                Content="🌐  webinfo-concept.fr/mindmap"
+                Margin="0,0,24,0"
+                VerticalAlignment="Center"
+                Click="OnSiteLinkClick" />
+        <!-- Métadonnées (droite) -->
+        <StackPanel Grid.Column="2"
+                    Orientation="Horizontal"
+                    Spacing="14"
+                    VerticalAlignment="Center">
+          <TextBlock Opacity="0.5" Text="Version prototype1" />
+          <TextBlock Opacity="0.35" Text="│" />
+          <TextBlock Opacity="0.5" Text="GPLv3" />
+          <TextBlock Opacity="0.35" Text="│" />
+          <TextBlock Opacity="0.5"
+                     ToolTip.Tip="sam@poongaloo.org">
+            <Run Text="© " /><Run Text="Poongaloo" FontWeight="Medium" Foreground="#94A3B8" />
+          </TextBlock>
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- ════════════════════════ MAIN CONTENT ════════════════════════ -->
+    <Grid ColumnDefinitions="*,Auto">
+
+      <!-- Zone de dessin -->
+      <views:MindMapView Grid.Column="0"
+                         DataContext="{Binding MindMap}" />
+
+      <!-- Panneau latéral droit -->
+      <Grid Grid.Column="1" Width="260" RowDefinitions="*,Auto">
+
+        <!-- Propriétés du nœud sélectionné -->
+        <Border Grid.Row="0"
+                Classes="PropertiesPanel"
+                IsVisible="{Binding MindMap.SelectedNode, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="16" Margin="16">
+
+              <TextBlock Text="Propriétés du nœud"
+                         Classes="PanelTitle" />
+
+              <!-- Texte du nœud -->
+              <StackPanel Spacing="6">
+                <TextBlock Text="Texte" Classes="FieldLabel" />
+                <TextBox Text="{Binding MindMap.SelectedNode.Text}"
+                         Classes="PropertyField"
+                         AcceptsReturn="False"
+                         Watermark="Saisir le texte..." />
+              </StackPanel>
+
+              <!-- Position -->
+              <StackPanel Spacing="6">
+                <TextBlock Text="Position" Classes="FieldLabel" />
+                <Grid ColumnDefinitions="*,8,*">
+                  <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="X" Classes="FieldLabel" FontSize="11" />
+                    <NumericUpDown Value="{Binding MindMap.SelectedNode.X}"
+                                   Increment="10"
+                                   FormatString="F0"
+                                   Classes="PropertyField" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="2" Spacing="4">
+                    <TextBlock Text="Y" Classes="FieldLabel" FontSize="11" />
+                    <NumericUpDown Value="{Binding MindMap.SelectedNode.Y}"
+                                   Increment="10"
+                                   FormatString="F0"
+                                   Classes="PropertyField" />
+                  </StackPanel>
+                </Grid>
+              </StackPanel>
+
+              <!-- Couleur personnalisée du nœud -->
+              <StackPanel Spacing="6">
+                <TextBlock Text="Couleur personnalisée" Classes="FieldLabel" />
+                <Grid ColumnDefinitions="*,8,32">
+                  <TextBox Grid.Column="0"
+                           Text="{Binding MindMap.SelectedNode.CustomColor}"
+                           Classes="PropertyField"
+                           Watermark="Hérite du niveau…" />
+                  <Border Grid.Column="2"
+                          Width="28" Height="28"
+                          CornerRadius="6"
+                          Background="{Binding MindMap.SelectedNode.CustomColor,
+                                               Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                </Grid>
+                <TextBlock Text="Vide = couleur du niveau"
+                           FontSize="10"
+                           Opacity="0.5" />
+              </StackPanel>
+
+              <!-- Infos -->
+              <StackPanel Spacing="6">
+                <TextBlock Text="Infos" Classes="FieldLabel" />
+                <Border Classes="InfoBox">
+                  <StackPanel Spacing="4">
+                    <TextBlock Classes="InfoText">
+                      <Run Text="Type : " FontWeight="SemiBold" />
+                      <Run Text="{Binding MindMap.SelectedNode.NodeType}" />
+                    </TextBlock>
+                    <TextBlock Classes="InfoText">
+                      <Run Text="Niveau : " FontWeight="SemiBold" />
+                      <Run Text="{Binding MindMap.SelectedNode.Depth}" />
+                    </TextBlock>
+                    <TextBlock Classes="InfoText">
+                      <Run Text="Enfants : " FontWeight="SemiBold" />
+                      <Run Text="{Binding MindMap.SelectedNode.Children.Count}" />
+                    </TextBlock>
+                    <TextBlock Classes="InfoText">
+                      <Run Text="État : " FontWeight="SemiBold" />
+                      <Run Text="{Binding MindMap.SelectedNode.CollapseLabel}" />
+                    </TextBlock>
+                    <TextBlock Classes="InfoText">
+                      <Run Text="ID : " FontWeight="SemiBold" />
+                      <Run Text="{Binding MindMap.SelectedNode.Id}" />
+                    </TextBlock>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+
+            </StackPanel>
+          </ScrollViewer>
+        </Border>
+
+        <!-- Message si aucun nœud sélectionné -->
+        <Border Grid.Row="0"
+                Classes="PropertiesPanel"
+                IsVisible="{Binding MindMap.SelectedNode, Converter={x:Static ObjectConverters.IsNull}}">
+          <TextBlock Text="Sélectionnez un nœud pour voir ses propriétés"
+                     Classes="EmptyPanelText"
+                     TextWrapping="Wrap"
+                     TextAlignment="Center"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
+                     Margin="20" />
+        </Border>
+
+        <!-- Couleurs par niveau (toujours visible) -->
+        <Border Grid.Row="1"
+                Classes="PropertiesPanel"
+                BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource BorderBrush}">
+          <ScrollViewer MaxHeight="320"
+                        VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="10" Margin="16">
+
+              <TextBlock Text="Couleurs par niveau"
+                         Classes="PanelTitle" />
+
+              <ItemsControl ItemsSource="{Binding MindMap.LevelColors}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:LevelColorViewModel">
+                    <StackPanel Spacing="4" Margin="0,0,0,6">
+                      <TextBlock Text="{Binding Label}" Classes="FieldLabel" />
+                      <Grid ColumnDefinitions="*,8,32">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding Color}"
+                                 Classes="PropertyField"
+                                 Watermark="#RRGGBB" />
+                        <Border Grid.Column="2"
+                                Width="28" Height="28"
+                                CornerRadius="6"
+                                Background="{Binding Color,
+                                                     Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                      </Grid>
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+
+            </StackPanel>
+          </ScrollViewer>
+        </Border>
+
+      </Grid>
+
+    </Grid>
+
+  </DockPanel>
+
+</Window>

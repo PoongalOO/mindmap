@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ─── Palette ─────────────────────────────────────────────────── -->
+  <Color x:Key="BgBase">#0F172A</Color>
+  <Color x:Key="BgSurface">#1E293B</Color>
+  <Color x:Key="BgElevated">#273548</Color>
+  <Color x:Key="BorderColor">#334155</Color>
+  <Color x:Key="TextPrimary">#F1F5F9</Color>
+  <Color x:Key="TextSecondary">#94A3B8</Color>
+  <Color x:Key="AccentBlue">#3B82F6</Color>
+  <Color x:Key="AccentIndigo">#6366F1</Color>
+  <Color x:Key="DangerRed">#EF4444</Color>
+  <Color x:Key="SuccessGreen">#22C55E</Color>
+
+  <SolidColorBrush x:Key="BgBaseBrush" Color="{StaticResource BgBase}" />
+  <SolidColorBrush x:Key="BgSurfaceBrush" Color="{StaticResource BgSurface}" />
+  <SolidColorBrush x:Key="BgElevatedBrush" Color="{StaticResource BgElevated}" />
+  <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
+  <SolidColorBrush x:Key="AccentBlueBrush" Color="{StaticResource AccentBlue}" />
+  <SolidColorBrush x:Key="AccentIndigoBrush" Color="{StaticResource AccentIndigo}" />
+  <SolidColorBrush x:Key="DangerRedBrush" Color="{StaticResource DangerRed}" />
+
+  <!-- ─── Typography ───────────────────────────────────────────────── -->
+  <FontFamily x:Key="AppFont">Inter,Segoe UI,Helvetica Neue,sans-serif</FontFamily>
+
+</ResourceDictionary>

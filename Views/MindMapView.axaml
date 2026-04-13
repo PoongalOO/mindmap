@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MindMapApp.ViewModels"
+             xmlns:controls="using:MindMapApp.Controls"
+             x:Class="MindMapApp.Views.MindMapView"
+             x:DataType="vm:MindMapViewModel">
+
+  <Grid>
+    <!-- Zone de dessin principale -->
+    <controls:MindMapCanvas MindMap="{Binding}" />
+
+    <!-- Indicateur d'échelle -->
+    <Border HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,16,16"
+            Classes="StatusBadge">
+      <TextBlock>
+        <Run Text="Zoom : " />
+        <Run Text="{Binding Scale, StringFormat={}{0:P0}}" />
+      </TextBlock>
+    </Border>
+  </Grid>
+
+</UserControl>

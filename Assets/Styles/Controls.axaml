@@ -1,0 +1,208 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ─── Toolbar ──────────────────────────────────────────────────── -->
+  <Style Selector="Border.Toolbar">
+    <Setter Property="Background" Value="{StaticResource BgSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="Padding" Value="12,8" />
+    <Setter Property="Height" Value="52" />
+  </Style>
+
+  <!-- ─── ToolbarButton ─────────────────────────────────────────────── -->
+  <Style Selector="Button.ToolbarButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="10,6" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.12" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <Style Selector="Button.ToolbarButton:pointerover">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}" />
+  </Style>
+
+  <Style Selector="Button.ToolbarButton:pressed">
+    <Setter Property="Background" Value="{StaticResource AccentBlueBrush}" />
+  </Style>
+
+  <Style Selector="Button.ToolbarButton:disabled">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+
+  <!-- Primary variant -->
+  <Style Selector="Button.ToolbarButton.Primary">
+    <Setter Property="Background" Value="{StaticResource AccentIndigoBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource AccentIndigoBrush}" />
+  </Style>
+
+  <Style Selector="Button.ToolbarButton.Primary:pointerover">
+    <Setter Property="Background" Value="#7C3AED" />
+  </Style>
+
+  <!-- Danger variant -->
+  <Style Selector="Button.ToolbarButton.Danger">
+    <Setter Property="Foreground" Value="#FCA5A5" />
+    <Setter Property="BorderBrush" Value="#7F1D1D" />
+  </Style>
+
+  <Style Selector="Button.ToolbarButton.Danger:pointerover">
+    <Setter Property="Background" Value="#7F1D1D" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+
+  <!-- ─── Toolbar Separator ─────────────────────────────────────────── -->
+  <Style Selector="Separator.ToolbarSeparator">
+    <Setter Property="Background" Value="{StaticResource BorderBrush}" />
+    <Setter Property="Width" Value="1" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Margin" Value="4,0" />
+  </Style>
+
+  <!-- ─── Title Edit ────────────────────────────────────────────────── -->
+  <Style Selector="TextBox.TitleEdit">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="8,5" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="CaretBrush" Value="{StaticResource AccentBlueBrush}" />
+  </Style>
+
+  <!-- ─── Status Bar ─────────────────────────────────────────────────── -->
+  <Style Selector="Border.StatusBar">
+    <Setter Property="Background" Value="{StaticResource BgSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="0,1,0,0" />
+    <Setter Property="Padding" Value="14,0" />
+    <Setter Property="Height" Value="36" />
+  </Style>
+
+  <Style Selector="Border.StatusBar TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+  </Style>
+
+  <!-- Lien du footer (remplace HyperlinkButton) -->
+  <Style Selector="Button.StatusLink">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+    <Setter Property="Opacity" Value="0.55" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.StatusLink:pointerover">
+    <Setter Property="Opacity" Value="0.9" />
+    <Setter Property="Foreground" Value="{StaticResource AccentIndigoBrush}" />
+  </Style>
+  <Style Selector="Button.StatusLink:pressed">
+    <Setter Property="Opacity" Value="0.7" />
+  </Style>
+
+  <!-- ─── Properties Panel ───────────────────────────────────────────── -->
+  <Style Selector="Border.PropertiesPanel">
+    <Setter Property="Background" Value="{StaticResource BgSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1,0,0,0" />
+  </Style>
+
+  <Style Selector="TextBlock.PanelTitle">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+  </Style>
+
+  <Style Selector="TextBlock.FieldLabel">
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+    <Setter Property="FontWeight" Value="Medium" />
+  </Style>
+
+  <Style Selector="TextBox.PropertyField">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="8,6" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="CaretBrush" Value="{StaticResource AccentBlueBrush}" />
+  </Style>
+
+  <Style Selector="NumericUpDown.PropertyField">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+
+  <Style Selector="Border.InfoBox">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="10,8" />
+  </Style>
+
+  <Style Selector="TextBlock.InfoText">
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+  </Style>
+
+  <Style Selector="TextBlock.EmptyPanelText">
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+    <Setter Property="Opacity" Value="0.6" />
+  </Style>
+
+  <!-- ─── Status Badge (zoom indicator) ─────────────────────────────── -->
+  <Style Selector="Border.StatusBadge">
+    <Setter Property="Background" Value="#CC1E293B" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="8,4" />
+  </Style>
+
+  <Style Selector="Border.StatusBadge TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+  </Style>
+
+  <!-- ─── PathIcon global tint ──────────────────────────────────────── -->
+  <Style Selector="PathIcon">
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button.ToolbarButton.Primary PathIcon">
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+
+</Styles>
