@@ -66,7 +66,7 @@ jobs:
             "packaging/windows/installer.iss"
 
       - name: Upload Windows installer artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-installer
           path: dist/windows/*.exe
@@ -147,7 +147,7 @@ jobs:
           dpkg-deb --build "$PKG_ROOT" "dist/linux/mindmap_${VERSION}_amd64.deb"
 
       - name: Upload Debian package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: debian-package
           path: dist/linux/*.deb
@@ -162,13 +162,13 @@ jobs:
 
     steps:
       - name: Download Windows artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: windows-installer
           path: release-assets/windows
 
       - name: Download Debian artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: debian-package
           path: release-assets/linux
