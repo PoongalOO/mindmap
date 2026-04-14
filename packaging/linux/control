@@ -1,0 +1,10 @@
+Package: mindmap
+Version: __VERSION__
+Section: education
+Priority: optional
+Architecture: amd64
+Maintainer: Poongaloo <sam@poongaloo.org>
+Depends: libc6, libgcc-s1, libstdc++6, libx11-6, libice6, libsm6, libfontconfig1
+Description: Application de cartes mentales pédagogiques
+ Application desktop Avalonia permettant de créer et utiliser
+ des cartes mentales interactives pour l'enseignement et la formation.

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Mindmap
+Comment=Cartes mentales pédagogiques interactives
+Exec=/usr/bin/mindmap
+Icon=mindmap
+Terminal=false
+Categories=Education;
+StartupNotify=true
