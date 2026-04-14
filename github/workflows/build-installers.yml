@@ -1,0 +1,122 @@
+name: Build installers
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  APP_NAME: MindMapApp
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_FILE: './MindMapApp.csproj'
+
+jobs:
+  build-windows-exe:
+    name: Build Windows installer (.exe)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_FILE }}
+
+      - name: Publish Windows
+        run: dotnet publish ${{ env.PROJECT_FILE }} -c Release -r win-x64 --self-contained true -o ./publish/win-x64
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer with Inno Setup
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          if ([string]::IsNullOrWhiteSpace($version)) { $version = "0.1.0" }
+          if ($version.StartsWith("v")) { $version = $version.Substring(1) }
+
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
+            "/DMyAppVersion=$version" `
+            "/DMyAppName=${{ env.APP_NAME }}" `
+            "packaging/windows/installer.iss"
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindmap-windows-installer
+          path: dist/windows/*.exe
+
+  build-debian-deb:
+    name: Build Debian package (.deb)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_FILE }}
+
+      - name: Publish Linux
+        run: dotnet publish ${{ env.PROJECT_FILE }} -c Release -r linux-x64 --self-contained true -o ./publish/linux-x64
+
+      - name: Build Debian package
+        shell: bash
+        run: |
+          set -e
+
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [ -z "$VERSION" ]; then VERSION="0.1.0"; fi
+
+          PKG_ROOT="pkgroot"
+          APP_NAME="MindMapApp"
+          PKG_NAME="mindmap"
+
+          rm -rf "$PKG_ROOT" dist
+          mkdir -p "$PKG_ROOT/DEBIAN"
+          mkdir -p "$PKG_ROOT/opt/$PKG_NAME"
+          mkdir -p "$PKG_ROOT/usr/bin"
+          mkdir -p "$PKG_ROOT/usr/share/applications"
+          mkdir -p "$PKG_ROOT/usr/share/icons/hicolor/256x256/apps"
+          mkdir -p dist
+
+          cp -r ./publish/linux-x64/* "$PKG_ROOT/opt/$PKG_NAME/"
+
+          chmod +x "$PKG_ROOT/opt/$PKG_NAME/$APP_NAME" || true
+
+          sed \
+            -e "s/__VERSION__/$VERSION/g" \
+            -e "s/__APP_NAME__/$APP_NAME/g" \
+            packaging/linux/control > "$PKG_ROOT/DEBIAN/control"
+
+          cp packaging/linux/mindmap.desktop "$PKG_ROOT/usr/share/applications/mindmap.desktop"
+
+          if [ -f packaging/linux/icon.png ]; then
+            cp packaging/linux/icon.png "$PKG_ROOT/usr/share/icons/hicolor/256x256/apps/mindmap.png"
+          fi
+
+          cat > "$PKG_ROOT/usr/bin/mindmap" << EOF
+          #!/bin/sh
+          exec /opt/$PKG_NAME/$APP_NAME "\$@"
+          EOF
+
+          chmod 755 "$PKG_ROOT/usr/bin/mindmap"
+
+          dpkg-deb --build "$PKG_ROOT" "dist/mindmap_${VERSION}_amd64.deb"
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindmap-debian-package
+          path: dist/*.deb
