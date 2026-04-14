@@ -1,4 +1,4 @@
-name: Build installers
+name: Build and release installers
 
 on:
   push:
@@ -6,11 +6,16 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   APP_NAME: MindMapApp
+  DISPLAY_NAME: Mindmap
   DOTNET_VERSION: '8.0.x'
   PROJECT_FILE: './MindMapApp.csproj'
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  PACKAGE_NAME: 'mindmap'
 
 jobs:
   build-windows-exe:
@@ -32,6 +37,14 @@ jobs:
       - name: Publish Windows
         run: dotnet publish ${{ env.PROJECT_FILE }} -c Release -r win-x64 --self-contained true -o ./publish/win-x64
 
+      - name: Verify published files
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path ./publish/win-x64 -Recurse
+          if (!(Test-Path "./publish/win-x64/MindMapApp.exe")) {
+            throw "MindMapApp.exe introuvable dans publish/win-x64"
+          }
+
       - name: Install Inno Setup
         run: choco install innosetup --no-progress -y
 
@@ -44,19 +57,20 @@ jobs:
           } else {
             $version = "0.1.0-manual.${{ github.run_number }}"
           }
-          if ([string]::IsNullOrWhiteSpace($version)) { $version = "0.1.0" }
-          if ($version.StartsWith("v")) { $version = $version.Substring(1) }
+
+          New-Item -ItemType Directory -Force -Path dist/windows | Out-Null
 
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
             "/DMyAppVersion=$version" `
-            "/DMyAppName=${{ env.APP_NAME }}" `
+            "/DMyAppName=${{ env.DISPLAY_NAME }}" `
             "packaging/windows/installer.iss"
 
-      - name: Upload Windows installer
+      - name: Upload Windows installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mindmap-windows-installer
+          name: windows-installer
           path: dist/windows/*.exe
+          if-no-files-found: error
 
   build-debian-deb:
     name: Build Debian package (.deb)
@@ -77,21 +91,24 @@ jobs:
       - name: Publish Linux
         run: dotnet publish ${{ env.PROJECT_FILE }} -c Release -r linux-x64 --self-contained true -o ./publish/linux-x64
 
+      - name: Verify published files
+        run: |
+          ls -la ./publish/linux-x64
+          test -f ./publish/linux-x64/MindMapApp
+
       - name: Build Debian package
         shell: bash
         run: |
-          set -e
+          set -euxo pipefail
 
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             VERSION="${GITHUB_REF_NAME#v}"
           else
             VERSION="0.1.0-manual.${GITHUB_RUN_NUMBER}"
           fi
-          if [ -z "$VERSION" ]; then VERSION="0.1.0"; fi
 
           PKG_ROOT="pkgroot"
-          APP_NAME="MindMapApp"
-          PKG_NAME="mindmap"
+          PKG_NAME="${PACKAGE_NAME}"
 
           rm -rf "$PKG_ROOT" dist
           mkdir -p "$PKG_ROOT/DEBIAN"
@@ -99,16 +116,17 @@ jobs:
           mkdir -p "$PKG_ROOT/usr/bin"
           mkdir -p "$PKG_ROOT/usr/share/applications"
           mkdir -p "$PKG_ROOT/usr/share/icons/hicolor/256x256/apps"
-          mkdir -p dist
+          mkdir -p dist/linux
 
           cp -r ./publish/linux-x64/* "$PKG_ROOT/opt/$PKG_NAME/"
-
-          chmod +x "$PKG_ROOT/opt/$PKG_NAME/$APP_NAME" || true
+          chmod +x "$PKG_ROOT/opt/$PKG_NAME/MindMapApp"
 
           sed \
             -e "s/__VERSION__/$VERSION/g" \
-            -e "s/__APP_NAME__/$APP_NAME/g" \
             packaging/linux/control > "$PKG_ROOT/DEBIAN/control"
+
+          # Assure une ligne vide finale pour le format Debian
+          echo "" >> "$PKG_ROOT/DEBIAN/control"
 
           cp packaging/linux/mindmap.desktop "$PKG_ROOT/usr/share/applications/mindmap.desktop"
 
@@ -116,17 +134,71 @@ jobs:
             cp packaging/linux/icon.png "$PKG_ROOT/usr/share/icons/hicolor/256x256/apps/mindmap.png"
           fi
 
-          cat > "$PKG_ROOT/usr/bin/mindmap" << EOF
+          cat > "$PKG_ROOT/usr/bin/mindmap" << 'EOF'
           #!/bin/sh
-          exec /opt/$PKG_NAME/$APP_NAME "\$@"
+          exec /opt/mindmap/MindMapApp "$@"
           EOF
 
           chmod 755 "$PKG_ROOT/usr/bin/mindmap"
 
-          dpkg-deb --build "$PKG_ROOT" "dist/mindmap_${VERSION}_amd64.deb"
+          echo "===== CONTROL FILE ====="
+          cat "$PKG_ROOT/DEBIAN/control"
 
-      - name: Upload Debian package
+          dpkg-deb --build "$PKG_ROOT" "dist/linux/mindmap_${VERSION}_amd64.deb"
+
+      - name: Upload Debian package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mindmap-debian-package
-          path: dist/*.deb
+          name: debian-package
+          path: dist/linux/*.deb
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - build-windows-exe
+      - build-debian-deb
+
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+          path: release-assets/windows
+
+      - name: Download Debian artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: debian-package
+          path: release-assets/linux
+
+      - name: Show downloaded files
+        run: find release-assets -maxdepth 3 -type f | sort
+
+      - name: Generate SHA256 checksums
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p release-assets/checksums
+
+          find release-assets -type f \( -name "*.exe" -o -name "*.deb" \) | while read -r file; do
+            base="$(basename "$file")"
+            sha256sum "$file" > "release-assets/checksums/${base}.sha256"
+          done
+
+          echo "===== CHECKSUMS ====="
+          cat release-assets/checksums/*.sha256
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('manual-{0}', github.run_number) }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || format('Manual build {0}', github.run_number) }}
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ github.ref_type != 'tag' }}
+          files: |
+            release-assets/windows/*.exe
+            release-assets/linux/*.deb
+            release-assets/checksums/*.sha256
