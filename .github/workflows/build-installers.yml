@@ -1,3 +1,6 @@
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 name: Build installers
 
 on:
@@ -18,10 +21,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -37,7 +40,12 @@ jobs:
       - name: Build installer with Inno Setup
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}"
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $version = "${{ github.ref_name }}"
+            if ($version.StartsWith("v")) { $version = $version.Substring(1) }
+          } else {
+            $version = "0.1.0-manual.${{ github.run_number }}"
+          }
           if ([string]::IsNullOrWhiteSpace($version)) { $version = "0.1.0" }
           if ($version.StartsWith("v")) { $version = $version.Substring(1) }
 
@@ -58,10 +66,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -76,7 +84,11 @@ jobs:
         run: |
           set -e
 
-          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="0.1.0-manual.${GITHUB_RUN_NUMBER}"
+          fi
           if [ -z "$VERSION" ]; then VERSION="0.1.0"; fi
 
           PKG_ROOT="pkgroot"
